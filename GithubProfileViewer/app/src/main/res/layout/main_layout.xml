@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_welcome_screen"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.ogbeoziomajnr.githubprofileviewer.Activities.WelcomeScreenActivity">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/app_background"
+        android:id="@+id/imageViewBackgroung1"
+        android:scaleType="centerCrop"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        />
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="List Users"
+        android:id="@+id/btn_list_users"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        />
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id = "@+id/list"
+        android:layout_above="@+id/btn_list_users"
+        android:layout_below="@+id/txt_list_users"
+        android:background="#ffffff"
+        >
+    </ListView>
+
+    <TextView
+        android:id = "@+id/txt_list_users"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="List Of Users"
+        android:textSize="20dp"
+        android:textColor="#ffffff"
+        android:textAlignment="center"
+        />
+</RelativeLayout>

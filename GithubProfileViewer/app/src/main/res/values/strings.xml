@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Github Profile Viewer</string>
+    <string name="introduction">This Application List Github Java Developers in Lagos</string>
+    <string name="title_activity_main_layout">MainLayoutActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
