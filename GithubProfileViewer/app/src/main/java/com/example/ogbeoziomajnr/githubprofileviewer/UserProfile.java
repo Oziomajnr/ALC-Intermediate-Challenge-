@@ -1,15 +1,13 @@
 package com.example.ogbeoziomajnr.githubprofileviewer;
 
-import android.net.Uri;
-
 import java.io.Serializable;
-import java.net.URL;
 
 /**
  * Created by SQ-OGBE PC on 10/03/2017.
  */
 
 public class UserProfile implements Serializable {
+
 
     private String user_name;
 
