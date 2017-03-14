@@ -1,22 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height = "wrap_content"
+    android:layout_height="56dp"
     android:orientation="horizontal"
+    android:paddingRight="16dp"
+    android:layout_marginTop="8dp"
+
     >
-<ImageView
-    android:layout_width="60dp"
-    android:layout_height="60dp"
-    android:id="@+id/list_image"
-    android:src="@drawable/default_image"
-    />
+
+    <ImageView
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:id="@+id/list_image"
+        android:paddingLeft="16dp"
+        android:src="@drawable/default_image"
+        />
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="wrap_content"
         android:id="@+id/list_text"
-        android:textSize="30dp"
+        android:textSize="16dp"
         android:text="Username"
-        android:textAlignment="center"
+        android:textColor="#000000"
+        android:paddingLeft="72dp"
+        android:layout_gravity="center"
         />
 </LinearLayout>

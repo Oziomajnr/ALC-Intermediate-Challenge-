@@ -48,8 +48,6 @@ public class ProfileFragment extends DialogFragment {
 
         profile = (UserProfile) getArguments().getSerializable(user_profile_key);
 
-        config = new ImageLoaderConfiguration.Builder(this.getContext()).defaultDisplayImageOptions(defaultOptions).build();
-       ImageLoader.getInstance().init(config);
         return view;
     }
 

@@ -1,29 +1,28 @@
 package com.example.ogbeoziomajnr.githubprofileviewer.Activities;
 
-import android.app.ActivityManager;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.ogbeoziomajnr.githubprofileviewer.AppController;
+import com.example.ogbeoziomajnr.githubprofileviewer.HttpRequestHelper;
 import com.example.ogbeoziomajnr.githubprofileviewer.ListViewAdapter;
 import com.example.ogbeoziomajnr.githubprofileviewer.R;
 import com.example.ogbeoziomajnr.githubprofileviewer.UserProfile;
+import com.example.ogbeoziomajnr.githubprofileviewer.Utility;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,15 +39,16 @@ public class MainLayoutActivity extends AppCompatActivity {
     //Declare global Variable
     private ListView list_view;
     private ListViewAdapter adapter;
-    // private HttpRequestHelper requestHelper = new HttpRequestHelper();
-    private String url = "https://api.github.com/search/users?q=location:lagos+language:java";
+    private HttpRequestHelper requestHelper;
+
     private static String TAG = MainLayoutActivity.class.getSimpleName();
-    private ProgressDialog pDialog;
+    // private ProgressDialog pDialog;
     ArrayList<UserProfile> items;
 
+    private int number_of_items; // number of items in result
+    private int number_items_remaining; // the number of items remaining after paginating the result
 
-    // temporary string to show the parsed response
-    private String jsonResponse;
+    Utility utility;
 
 
     // fragment manager to be used in the fragment to display the profile dialog
@@ -60,9 +60,9 @@ public class MainLayoutActivity extends AppCompatActivity {
         // set the layout for this activity
         setContentView(R.layout.main_layout);
 
-        pDialog = new ProgressDialog(this);
-        pDialog.setMessage("Please wait...");
-        pDialog.setCancelable(false);
+
+        utility = new Utility(this);
+        requestHelper = new HttpRequestHelper(this);
 
         // get all the views related to this activity
         list_view = (ListView) findViewById(R.id.list);
@@ -72,8 +72,20 @@ public class MainLayoutActivity extends AppCompatActivity {
         items = new ArrayList<>();
 
 
+        View footerView = ((LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.footer, null, false);
+        list_view.addFooterView(footerView);
         // get the adapter the we created and set it as the list view adapter
         adapter = new ListViewAdapter(this, items);
+
+        TextView txt_load_more = (TextView) findViewById(R.id.textViewFooter);
+
+        txt_load_more.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                utility.showLongToast("Load More");
+            }
+        });
+
         list_view.setAdapter(adapter);
 
         //actions to be performed when a list view item is clicked
@@ -93,14 +105,15 @@ public class MainLayoutActivity extends AppCompatActivity {
         list_users_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                makeJsonArrayRequest(getApplicationContext());
+                 String url = "https://api.github.com/search/users?q=location:lagos+language:java";
+                makeJsonArrayRequest(getApplicationContext(), url);
             }
         });
 
     }
 
-    private void makeJsonArrayRequest(final Context context) {
-        showpDialog();
+    private void makeJsonArrayRequest(final Context context, String url) {
+        utility.showprogressDialog();
 
         JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
@@ -110,13 +123,10 @@ public class MainLayoutActivity extends AppCompatActivity {
                         Log.d(TAG, response.toString());
 
                         try {
-                            // Parsing json array response
-                            // loop through each json object
 
-                            jsonResponse = "";
                             items = new ArrayList<>();
 
-
+                            number_of_items = Integer.parseInt(response.getString("total_count"));
                             JSONArray response_array = response.getJSONArray("items");
 
                             for (int i = 0; i < response_array.length(); i++) {
@@ -135,13 +145,11 @@ public class MainLayoutActivity extends AppCompatActivity {
                             list_view.setAdapter(adapter);
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            Toast.makeText(getApplicationContext(),
-                                    "Error: " + e.getMessage(),
-                                    Toast.LENGTH_LONG).show();
+                            utility.showLongToast("Error: " + e.getMessage());
                         } catch (Exception e) {
 
                         }
-                        hidepDialog();
+                        utility.hideprogressDialog();
                     }
                 }, new Response.ErrorListener() {
 
@@ -151,25 +159,13 @@ public class MainLayoutActivity extends AppCompatActivity {
                 System.err.println("The class of response is " + error.networkResponse);
                 error.printStackTrace();
                 VolleyLog.d(TAG, "Error: " + error.getMessage());
-                Toast.makeText(getApplicationContext(),
-                        error.getMessage(), Toast.LENGTH_LONG).show();
-                hidepDialog();
+                utility.showLongToast(error.getMessage());
+                utility.hideprogressDialog();
             }
         });
 
         // Adding request to request queue
         AppController.getInstance().addToRequestQueue(req);
-    }
-
-
-    private void showpDialog() {
-        if (!pDialog.isShowing())
-            pDialog.show();
-    }
-
-    private void hidepDialog() {
-        if (pDialog.isShowing())
-            pDialog.dismiss();
     }
 
 

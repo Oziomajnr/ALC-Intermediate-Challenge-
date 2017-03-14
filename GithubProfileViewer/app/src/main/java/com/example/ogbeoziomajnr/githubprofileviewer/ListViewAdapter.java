@@ -25,8 +25,6 @@ public class ListViewAdapter extends ArrayAdapter<UserProfile> {
 
     private ArrayList<UserProfile> userProfiles;
     private ImageLoader image_loader = ImageLoader.getInstance();
-    private ImageLoaderConfiguration config;
-    private DisplayImageOptions defaultOptions;
 
     /**
      * Constructor for the list view adapter, accepts a list of user profile that would be used
@@ -39,10 +37,7 @@ public class ListViewAdapter extends ArrayAdapter<UserProfile> {
         super(context, 0, user_profile);
         userProfiles = user_profile;
 
-        // set the default option of the universal image loader library to cache the image
-        defaultOptions = new DisplayImageOptions.Builder().cacheInMemory(true).cacheOnDisk(true).build();
-        config = new ImageLoaderConfiguration.Builder(context).defaultDisplayImageOptions(defaultOptions).build();
-        ImageLoader.getInstance().init(config);
+
     }
 
     /**
