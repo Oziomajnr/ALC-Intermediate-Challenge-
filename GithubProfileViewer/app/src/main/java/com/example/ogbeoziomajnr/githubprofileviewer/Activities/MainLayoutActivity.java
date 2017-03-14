@@ -45,8 +45,10 @@ public class MainLayoutActivity extends AppCompatActivity {
     // private ProgressDialog pDialog;
     ArrayList<UserProfile> items;
 
-    private int number_of_items; // number of items in result
-    private int number_items_remaining; // the number of items remaining after paginating the result
+    private int number_of_items = 0; // number of items in result
+    private int number_items_remaining = 0; // the number of items remaining after paginating the result
+    private int number_of_pages = 0;
+    private boolean first_request = false;
 
     Utility utility;
 
@@ -76,17 +78,21 @@ public class MainLayoutActivity extends AppCompatActivity {
         list_view.addFooterView(footerView);
         // get the adapter the we created and set it as the list view adapter
         adapter = new ListViewAdapter(this, items);
+        list_view.setAdapter(adapter);
 
         TextView txt_load_more = (TextView) findViewById(R.id.textViewFooter);
 
         txt_load_more.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                utility.showLongToast("Load More");
+                String url = "https://api.github.com/search/users?q=location:lagos+language:java&page="+number_of_pages;
+                first_request = false;
+                if (number_items_remaining > 0) {
+                   makeJsonArrayRequest(getApplicationContext(), url);
+                }
             }
         });
 
-        list_view.setAdapter(adapter);
 
         //actions to be performed when a list view item is clicked
         list_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -96,7 +102,7 @@ public class MainLayoutActivity extends AppCompatActivity {
                 UserProfile user_profile_clicked = (UserProfile) parent.getItemAtPosition(position);
 
                 //get the Profile fragment using the factory initializer and show the dialog
-                // the UserProfile object that is clicked is passsed to the fragemnt
+                // the UserProfile object that is clicked is passed to the fragemnt
                 ProfileFragment pf = ProfileFragment.newInstance(user_profile_clicked);
                 pf.show(fm, "Dialog Fragment");
             }
@@ -106,15 +112,17 @@ public class MainLayoutActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                  String url = "https://api.github.com/search/users?q=location:lagos+language:java";
-                makeJsonArrayRequest(getApplicationContext(), url);
+                number_of_pages = 0;
+                first_request = true;
+                number_of_items =   makeJsonArrayRequest(getApplicationContext(), url);
             }
         });
 
     }
 
-    private void makeJsonArrayRequest(final Context context, String url) {
+    private int makeJsonArrayRequest(final Context context, String url) {
         utility.showprogressDialog();
-
+        final int[] count = {0};
         JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -126,7 +134,11 @@ public class MainLayoutActivity extends AppCompatActivity {
 
                             items = new ArrayList<>();
 
-                            number_of_items = Integer.parseInt(response.getString("total_count"));
+
+                             count[0] = Integer.parseInt(response.getString("total_count"));
+                            if (first_request) {
+                                number_of_items = count[0];
+                            }
                             JSONArray response_array = response.getJSONArray("items");
 
                             for (int i = 0; i < response_array.length(); i++) {
@@ -143,6 +155,10 @@ public class MainLayoutActivity extends AppCompatActivity {
                             }
                             adapter = new ListViewAdapter(context, items);
                             list_view.setAdapter(adapter);
+
+                            number_items_remaining = number_of_items - 30;
+                            number_of_pages++;
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                             utility.showLongToast("Error: " + e.getMessage());
@@ -166,8 +182,8 @@ public class MainLayoutActivity extends AppCompatActivity {
 
         // Adding request to request queue
         AppController.getInstance().addToRequestQueue(req);
+        return count[0];
+
     }
-
-
 }
 
