@@ -2,6 +2,7 @@ package com.example.ogbeoziomajnr.githubprofileviewer.Activities;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -126,6 +127,22 @@ public class MainLayoutActivity extends AppCompatActivity {
         });
 
     }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        // Read values from the "savedInstanceState"-object and put them in your textview
+        Parcelable listViewState = savedInstanceState.getParcelable("list.state");
+        list_view.onRestoreInstanceState(listViewState);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        // Save the values you need from your textview into "outState"-object
+        outState.putParcelable("list.state",list_view.onSaveInstanceState() );
+        super.onSaveInstanceState(outState);
+    }
+
 
     private int makeJsonArrayRequest(final Context context, String url) {
         utility.showprogressDialog();

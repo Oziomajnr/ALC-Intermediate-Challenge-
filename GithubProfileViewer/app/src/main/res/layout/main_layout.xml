@@ -34,6 +34,7 @@
         android:layout_above="@+id/btn_list_users"
         android:layout_below="@+id/txt_list_users"
         android:background="#ffffff"
+        android:footerDividersEnabled="true"
         >
     </ListView>
 
