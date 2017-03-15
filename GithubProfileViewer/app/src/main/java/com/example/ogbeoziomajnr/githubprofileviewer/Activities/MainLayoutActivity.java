@@ -44,7 +44,9 @@ public class MainLayoutActivity extends AppCompatActivity {
     private static String TAG = MainLayoutActivity.class.getSimpleName();
     // private ProgressDialog pDialog;
     ArrayList<UserProfile> items;
+    View footerView;
 
+    //list parameters for pagination
     private int number_of_items = 0; // number of items in result
     private int number_items_remaining = 0; // the number of items remaining after paginating the result
     private int number_of_pages = 0;
@@ -90,6 +92,9 @@ public class MainLayoutActivity extends AppCompatActivity {
                 if (number_items_remaining > 0) {
                    makeJsonArrayRequest(getApplicationContext(), url);
                 }
+                else {
+                    utility.showShortToast("No more items to load");
+                }
             }
         });
 
@@ -112,9 +117,11 @@ public class MainLayoutActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                  String url = "https://api.github.com/search/users?q=location:lagos+language:java";
-                number_of_pages = 0;
                 first_request = true;
-                number_of_items =   makeJsonArrayRequest(getApplicationContext(), url);
+                items = new ArrayList<UserProfile>();
+                 makeJsonArrayRequest(getApplicationContext(), url);
+                number_of_pages = 1;
+
             }
         });
 
@@ -131,9 +138,6 @@ public class MainLayoutActivity extends AppCompatActivity {
                         Log.d(TAG, response.toString());
 
                         try {
-
-                            items = new ArrayList<>();
-
 
                              count[0] = Integer.parseInt(response.getString("total_count"));
                             if (first_request) {
@@ -156,7 +160,7 @@ public class MainLayoutActivity extends AppCompatActivity {
                             adapter = new ListViewAdapter(context, items);
                             list_view.setAdapter(adapter);
 
-                            number_items_remaining = number_of_items - 30;
+                            number_items_remaining = number_of_items - 30*number_of_pages;
                             number_of_pages++;
 
                         } catch (JSONException e) {
